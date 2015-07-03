@@ -2,6 +2,7 @@
 Example usage of the Node.js module 'cluster' with restarting workers and logging.
 
 Notice: If the worker id (and pid) doesn't change (i.e. you continuously hit the same worker), it's likely due to the built-in load balancing in `cluster`. For additional information, please see: http://stackoverflow.com/a/19369300
+In this example, howerver, it will change eventually due to the period killing of workers.
 
 # Credits
 
