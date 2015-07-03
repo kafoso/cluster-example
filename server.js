@@ -1,9 +1,12 @@
-var cluster = require('cluster');
 var sprintf = require('sprintf-js').sprintf;
+var cluster = require('cluster');
 
 var getWorkerOutput = function(w){
   return sprintf("[id: %s] [pid: %s]", w.id, w.process.pid);
 };
+
+var log = require("./server/log.js");
+
 
 if (cluster.isMaster) {
   var cpuCount = require('os').cpus().length;
@@ -13,7 +16,7 @@ if (cluster.isMaster) {
   }
   cluster.on('exit', function(deadWorker, code, signal) {
     var worker = cluster.fork(); // Restart the worker
-    console.log("Worker died: %s [code: %s] [signal: %s]. New worker started: %s.",
+    log.info("Worker died: %s [code: %s] [signal: %s]. New worker started: %s.",
       getWorkerOutput(deadWorker), code, signal, getWorkerOutput(worker));
   });
   setInterval(function(){
@@ -22,6 +25,6 @@ if (cluster.isMaster) {
     cluster.workers[workersKeys[randomWorker]].kill();
   }, 1000); // Kill a random worker every so often to verify the server keeps running
 } else {
-  console.log("Worker started: %s", getWorkerOutput(cluster.worker));
+  log.debug("Worker started: %s", getWorkerOutput(cluster.worker));
   require("./server/bootstrap.js")(cluster.worker);
 }
